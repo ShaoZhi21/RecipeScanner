@@ -54,24 +54,29 @@
   text-align: center;
 }
 
-/* Drag and Drop Upload */
+/* ✅ Drag & Drop Upload (Centered) */
 .drop-area {
   border: 2px dashed #ccc;
   border-radius: 10px;
-  padding: 30px;
+  padding: 10px;
   text-align: center;
   font-size: 16px;
   background: #f8f9fa;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
+  width: 100%;
+  max-width: 400px; /* ✅ Fixed width */
+  height: 250px; /* ✅ Fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto; /* ✅ Ensures centering */
 }
 
 .drop-area:hover {
   background: #e9ecef;
-}
-
-.drop-area input {
-  display: none;
 }
 
 .drop-area.dragging {
@@ -79,13 +84,21 @@
   border-color: #17a2b8;
 }
 
-.drop-area p span {
-  color: #3498db;
-  font-weight: bold;
-  cursor: pointer;
+.drop-area input {
+  display: none;
 }
 
-/* Primary Buttons */
+/* ✅ Center Image Inside Drop Area */
+.image-preview {
+  max-width: 100%;
+  max-height: 50vh; /* ✅ Max 50% of viewport height */
+  object-fit: contain; /* ✅ Ensures the image maintains aspect ratio */
+  border-radius: 10px;
+  display: block;
+  margin: auto; /* ✅ Ensures the image is centered */
+}
+
+/* ✅ Primary Buttons */
 .primary-button {
   background: linear-gradient(135deg, #4CAF50, #45a049);
   color: white;
@@ -114,18 +127,20 @@
 /* ✅ 5 Columns Per Row */
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* Ensures 5 items per row */
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
   padding: 20px;
 }
 
 .recipe-card {
   background: white;
-  padding: 15px;
+  padding: 20px;
   border-radius: 10px;
   text-align: center;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 300px;
 }
 
 .recipe-card:hover {
@@ -137,7 +152,29 @@
   border-radius: 10px;
 }
 
-/* ---------- Load More Button ---------- */
+.recipe-description {
+  font-size: 14px;
+  color: #555;
+  margin: 10px 0;
+}
+
+/* ✅ Read More Button */
+.read-more-button {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.read-more-button:hover {
+  background: #d35400;
+}
+
+/* ✅ Load More Button */
 .load-more {
   display: block;
   width: 200px;
@@ -152,7 +189,7 @@
 /* ---------- Responsive Design ---------- */
 @media (max-width: 1024px) {
   .recipe-grid {
-    grid-template-columns: repeat(3, 1fr); /* ✅ Adjusts to 3 items per row on tablets */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -181,12 +218,21 @@
   }
 
   .recipe-grid {
-    grid-template-columns: repeat(2, 1fr); /* ✅ Adjusts to 2 items per row on mobile */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
   .recipe-grid {
-    grid-template-columns: repeat(1, 1fr); /* ✅ Single-column layout for very small screens */
+    grid-template-columns: repeat(1, 1fr);
   }
-}
+
+  .drop-area {
+    max-width: 300px;
+    height: 200px;
+  }
+
+  .image-preview {
+    max-height: 40vh;
+  }
+} 
