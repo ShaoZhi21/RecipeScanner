@@ -8,6 +8,23 @@
   color: white;
 }
 
+.logobutton {
+  display: flex;
+  align-items: center;  /* Align image and text vertically */
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: black;
+  cursor: pointer;
+}
+
+.logo {
+  width: 100px;  /* Adjust the size of the logo */
+  height: 100px;
+  margin-right: 8px;  /* Space between the logo and the text */
+}
+
+
 .menu-left {
   font-size: 22px;
   font-weight: bold;
@@ -235,4 +252,50 @@
   .image-preview {
     max-height: 40vh;
   }
-} 
+}
+
+.description-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;  /* Space between each description item */
+  margin-top: 15px;
+}
+
+.description-item {
+  background-color: #f4f4f4;  /* Light background for each box */
+  padding: 15px;
+  border-radius: 10px;  /* Rounded edges */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Optional: Add a slight shadow */
+}
+
+.description-key {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.description-value {
+  font-size: 14px;
+  color: #333;
+}
+
+.ingredients-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Adds space between the ingredients */
+  justify-content: center; /* Centers the items horizontally */
+  margin-top: 20px; /* Adds space at the top */
+}
+
+.ingredient-item {
+  background-color: #f0f0f0; /* Light gray background */
+  padding: 10px 20px; /* Adds space inside each rectangle */
+  border-radius: 8px; /* Rounded corners */
+  border: 1px solid #ddd; /* Light border around each rectangle */
+  display: flex;
+  align-items: center; /* Centers the text vertically */
+}
+
+.ingredient {
+  font-size: 14px; /* Adjust font size */
+  color: #333; /* Dark text color */
+}
