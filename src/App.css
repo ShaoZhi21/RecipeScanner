@@ -1,38 +1,192 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* ---------- Top Navigation Bar ---------- */
+.top-menu {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background: #2c3e50;
+  padding: 15px 20px;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.menu-left {
+  font-size: 22px;
+  font-weight: bold;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.menu-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar {
+  padding: 8px;
+  margin-right: 10px;
+  border-radius: 5px;
+  border: none;
+  width: 200px;
+}
+
+.nav-button {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.nav-button:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Home Page Styles ---------- */
+.container {
+  width: 80%;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Drag and Drop Upload */
+.drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  font-size: 16px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.drop-area:hover {
+  background: #e9ecef;
+}
+
+.drop-area input {
+  display: none;
+}
+
+.drop-area.dragging {
+  background: #d1ecf1;
+  border-color: #17a2b8;
+}
+
+.drop-area p span {
+  color: #3498db;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Primary Buttons */
+.primary-button {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 25px;
+  transition: 0.3s ease-in-out;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.primary-button:hover {
+  background: linear-gradient(135deg, #388E3C, #2E7D32);
+  transform: scale(1.05);
+}
+
+/* ---------- Recipe Results Page Styles ---------- */
+.recipe-results-container {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+/* ✅ 5 Columns Per Row */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Ensures 5 items per row */
+  gap: 20px;
+  padding: 20px;
+}
+
+.recipe-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.recipe-card:hover {
+  transform: scale(1.05);
+}
+
+.recipe-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* ---------- Load More Button ---------- */
+.load-more {
+  display: block;
+  width: 200px;
+  margin: 20px auto;
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.load-more:hover {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+/* ---------- Responsive Design ---------- */
+@media (max-width: 1024px) {
+  .recipe-grid {
+    grid-template-columns: repeat(3, 1fr); /* ✅ Adjusts to 3 items per row on tablets */
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .top-menu {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .menu-right {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-button {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  .recipe-grid {
+    grid-template-columns: repeat(2, 1fr); /* ✅ Adjusts to 2 items per row on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .recipe-grid {
+    grid-template-columns: repeat(1, 1fr); /* ✅ Single-column layout for very small screens */
   }
 }
