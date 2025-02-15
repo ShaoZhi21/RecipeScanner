@@ -5,6 +5,7 @@ function ImageUpload() {
   const [imageUrl, setImageUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [imageDescription, setImageDescription] = useState(null); // Store image description
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -19,7 +20,7 @@ function ImageUpload() {
   const handleUpload = async () => {
     if (image) {
       const formData = new FormData();
-      formData.append('file', image);  // The 'file' is the field name expected by the backend
+      formData.append('file', image);  // 'file' is the field name expected by the backend
 
       setUploading(true);
 
@@ -29,19 +30,21 @@ function ImageUpload() {
           body: formData,
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          setUploadedImageUrl(data.url);  // URL returned from the backend
-          alert('Image uploaded successfully!');
+        if (!response.ok) {
+          // If the response is not OK, show an error
+          const errorData = await response.json();
+          alert('Failed to upload image: ' + errorData.message || 'Unknown error');
         } else {
-          alert('Failed to upload image');
+          const data = await response.json();
+          setUploadedImageUrl(data.url);  // Set the uploaded image URL
+          setImageDescription(data.description); // Set the image description received from backend
+          alert('Image uploaded successfully!');
         }
       } catch (error) {
         console.error('Error uploading image:', error);
         alert('An error occurred while uploading the image');
       } finally {
-        setUploading(false);
+        setUploading(false);  // Stop the uploading state
       }
     } else {
       alert('Please select an image first!');
@@ -69,6 +72,13 @@ function ImageUpload() {
         <div>
           <h3>Uploaded Image:</h3>
           <img src={uploadedImageUrl} alt="Uploaded Image" width="300" />
+        </div>
+      )}
+
+      {imageDescription && (
+        <div>
+          <h3>Image Description:</h3>
+          <p>{imageDescription}</p>
         </div>
       )}
     </div>
