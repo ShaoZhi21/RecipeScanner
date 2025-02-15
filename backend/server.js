@@ -8,10 +8,10 @@ const path = require('path');
 const app = express();
 const port = 5001;
 const { OpenAI } = require('openai');
+const fetch = require("node-fetch");
 
-app.use(cors({
-  origin: 'http://localhost:3000', 
-}));
+app.use(cors({ origin: 'http://localhost:3000', }));
+app.use(express.json()); // Enable JSON parsing
 
 // Load environment variables
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
@@ -94,7 +94,54 @@ app.post('/upload', upload.single('file'), (req, res) => {
   });
 });
 
+app.get("/filter-meals", async (req, res) => {
+  const query = req.query.q; // Get ingredients from query parameter
+  if (!query) return res.status(400).json({ error: "Query parameter is required" });
 
+  const ingredients = query.split(","); // Split ingredients by comma
+  const allMeals = new Set(); // Use a Set to avoid duplicates
+
+  try {
+    for (const ingredient of ingredients) {
+      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient.trim()}`);
+      const data = await response.json();
+
+      if (data.meals) {
+        data.meals.forEach(meal => allMeals.add(meal)); // Add each meal to the set
+      }
+    }
+
+    // Convert Set back to an array
+    const mealsArray = Array.from(allMeals);
+
+    res.json(mealsArray);
+  } catch (error) {
+    console.error("Error filtering meals:", error);
+    res.status(500).json({ error: "Failed to filter meals" });
+  }
+});
+
+
+
+// Search meals by id
+app.get("/search-meal", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.status(400).json({ error: "Query parameter is required" });
+
+  
+  try {
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${query}`);
+    const data = await response.json();
+    res.json(data);
+
+    // For further processing
+    const meal = data.meals[0];
+    
+  } catch (error) {
+    console.error("Error searching meal:", error);
+    res.status(500).json({ error: "Failed to fetch meal" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

@@ -12,6 +12,7 @@ function Home() {
   const [dragging, setDragging] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [clickedIngredients, setClickedIngredients] = useState([]);
 
   const handleFileSelect = (file) => {
     if (file) {
@@ -76,8 +77,38 @@ function Home() {
     }
     setUploading(false);
   };
-  
 
+  const pushToClicked = (ingredient) => {
+    setClickedIngredients((prev) =>
+      prev.includes(ingredient)
+        ? prev.filter((item) => item !== ingredient) // Remove if already clicked
+        : [...prev, ingredient] // Add if not clicked
+    );
+  };
+
+  const goToRecipes = async () => {
+    if (clickedIngredients.length === 0) {
+      alert("Please select at least one ingredient!");
+      return;
+    }
+  
+    try {
+      const query = clickedIngredients.join(",");
+      const response = await fetch(`http://localhost:5001/filter-meals?q=${query}`);
+      const data = await response.json();
+  
+      if (data.length > 0) {
+        navigate("/recipes", { state: { selectedIngredients: clickedIngredients, meals: data } });
+      } else {
+        alert("No meals found for the selected ingredients.");
+      }
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      alert("Failed to fetch recipes.");
+    }
+  };
+  
+  
   return (
     <div>
       <nav className="top-menu">
@@ -137,11 +168,30 @@ function Home() {
                 <h3>Ingredients:</h3>
                 <div className="ingredients-container">
                   {ingredients.map((ingredient, index) => (
-                    <div key={index} className="ingredient-item">
+                    <div 
+                      key={index} 
+                      className="ingredient-item" 
+                      onClick={() => pushToClicked(ingredient)} 
+                      style={{
+                        cursor: "pointer",
+                        color: clickedIngredients.includes(ingredient) ? "green" : "blue", // Change color if selected
+                        fontWeight: clickedIngredients.includes(ingredient) ? "bold" : "normal",
+                      }} >
                       <div className="ingredient">{ingredient}</div>
                     </div>
                   ))}
                 </div>
+                {clickedIngredients.length > 0 && (
+                  <div>
+                    <h3>Clicked Ingredients:</h3>
+                    <ul>
+                      {clickedIngredients.map((ingredient, index) => (
+                        <li key={index}>{ingredient}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <button className="primary-button" onClick={goToRecipes} disabled={uploading}>Find Recipes!</button>
               </div>
             )}
           </div>
