@@ -1,55 +1,99 @@
-require('dotenv').config({ path: '../.env' });  // Load environment variables from .env file
-const express = require('express');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const AWS = require('aws-sdk');
-const cors = require('cors');
-const path = require('path');
+import express from "express"; 
+import cors from "cors";
+import fetch from "node-fetch"; // Only needed for Node.js < 18
+import dotenv from "dotenv";
 
-// Set up the Express app
+dotenv.config(); // Load environment variables
+
 const app = express();
-const port = 5001;
+const PORT = process.env.PORT || 5000;
 
-// Enable CORS for cross-origin requests from React
-app.use(cors());
+app.use(cors()); // Allow frontend requests
+app.use(express.json()); // Enable JSON parsing
 
-// Configure AWS S3 using environment variables
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY, // Access key from .env
-  secretAccessKey: process.env.AWS_SECRET_KEY, // Secret key from .env
-  region: process.env.AWS_REGION, // Region from .env
-});
+// Checking for possible meals based on the ingredients we have.
+app.get("/filter-meals", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.status(400).json({ error: "Query parameter is required" });
 
-// Set up multer to upload files to S3
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: process.env.AWS_BUCKET_NAME, // Bucket name from .env
-    acl: 'public-read', // File permissions (optional)
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString() + path.extname(file.originalname)); // Unique file name
-    },
-  }),
-});
+  try {
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`);
+    const data = await response.json();
+    res.json(data);
+    // Extract the meals array
+    const meals = data.meals;
 
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (req.file) {
-    const fileUrl = req.file.location;
-    res.json({ url: fileUrl });
-  } else {
-    console.error('Error: No file uploaded');
-    res.status(400).json({ error: 'No file uploaded' });
+    data.meals.forEach(meal => {
+      console.log(meal.strMeal);  // Meal name
+      console.log(meal.strMealThumb);  // Meal image URL
+      // TO ADD TO FRONT END?
+    });
+
+  } catch (error) {
+    console.error("Error filtering meals:", error);
+    res.status(500).json({ error: "Failed to filter meals" });
   }
 });
 
-// Catch all other errors in the backend
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
+// Search meals by id
+app.get("/search-meal", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.status(400).json({ error: "Query parameter is required" });
+
+  
+  try {
+    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${query}`);
+    const data = await response.json();
+    res.json(data);
+
+    // For further processing
+    const meal = data.meals[0];
+    
+  } catch (error) {
+    console.error("Error searching meal:", error);
+    res.status(500).json({ error: "Failed to fetch meal" });
+  }
 });
 
+// // Obtain the meal thumbnail image
+// app.get("/get-meal-image", async (req, res) => {
+//   const query = req.query.q;
+//   if (!query) {
+//     return res.status(400).json({ error: "Query parameter is required" });
+//   }
+
+//   try {
+//     // Construct the image URL
+//     const imageUrl = `https://www.themealdb.com/images/ingredients/${query}.png`;
+    
+//     // Send the image URL as JSON
+//     res.json({ imageUrl });
+//   } catch (error) {
+//     console.error("Error fetching meal image:", error);
+//     res.status(500).json({ error: "Failed to fetch meal image" });
+//   }
+// });
+
+// // Obtain the ingredient thumbnail image
+// app.get("/get-ingredient-image", async (req, res) => {
+//   const query = req.query.q;
+//   if (!query) {
+//     return res.status(400).json({ error: "Query parameter is required" });
+//   }
+
+//   try {
+//     // Construct the image URL
+//     const imageUrl = `https://www.themealdb.com/images/ingredients/${query}.png`;
+    
+//     // Send the image URL as JSON
+//     res.json({ imageUrl });
+//   } catch (error) {
+//     console.error("Error fetching ingredient image:", error);
+//     res.status(500).json({ error: "Failed to fetch ingredient image" });
+//   }
+// });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
