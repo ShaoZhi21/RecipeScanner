@@ -1,7 +1,6 @@
 require('dotenv').config({ path: '../.env' });
 const express = require('express');
 const cors = require('cors');
-const cors = require('cors');
 const multer = require('multer');
 const AWS = require('aws-sdk');  
 const multerS3 = require('multer-s3');
@@ -51,14 +50,11 @@ const upload = multer({
     key: function (req, file, cb) {
       const fileName = Date.now().toString() + path.extname(file.originalname);
       cb(null, fileName);
-      const fileName = Date.now().toString() + path.extname(file.originalname);
-      cb(null, fileName);
     },
     contentType: multerS3.AUTO_CONTENT_TYPE,  // Automatically set content type based on file extension
   }),
 });
 
-// ✅ Upload Image Route
 app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).send({ message: 'No file uploaded' });
