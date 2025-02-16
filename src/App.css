@@ -437,16 +437,11 @@
 
 .add-button,
 .remove-button {
-  position: absolute;
   padding: 2%;
   bottom: 5%;
-  width: 80%;
-  left: 50%;      /* Move to the center */
-  transform: translateX(-50%); /* Adjust centering */
   border-radius: 20px;
   border: solid 1px;
   cursor: pointer;
-  background: #f9f9f9;
 }
 
 .add-button-info {
@@ -625,12 +620,17 @@
 
 /* Recipe Card */
 .recipe-card {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  width: 100%; /* Makes cards fit inside the grid column */
+  height: 100%;
 }
+
 
 .recipe-card img {
   max-width: 100%;

@@ -147,7 +147,7 @@ const Results = () => {
                   className={`add-button ${savedRecipes.includes(meal.idMeal) ? "saved" : ""}`}
                   style={{ 
                       cursor: "pointer",
-                      background: savedRecipes.includes(meal.idMeal) ? "#33b249" : "#F9F9F9",
+                      background: savedRecipes.includes(meal.idMeal) ? "#F9F9F9" : "#1a73e8",
                       color: savedRecipes.includes(meal.idMeal) ? "white" : "black",
                     }}
                   onClick={(e) => {
