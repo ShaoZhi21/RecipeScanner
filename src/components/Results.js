@@ -92,7 +92,7 @@ const Results = () => {
 
   return (
     <div>
-      <nav className="top-menu">
+<nav className="top-menu">
         <div className="menu-left">
           <button onClick={() => navigate("/")} className="logobutton">
             <img
@@ -102,7 +102,8 @@ const Results = () => {
             />
           </button>
         </div>
-        <div className="menu-right">
+
+        <div className="search-container">
           <input
             type="text"
             placeholder="Search recipes..."
@@ -110,18 +111,18 @@ const Results = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="nav-button" onClick={() => fetchRecipesBySearch(searchTerm)}>
-            Search
+          <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
+            🔍
           </button>
-          <button className="nav-button" onClick={() => navigate("/myrecipes")}>
-            Saved Recipes
-          </button>
-          <button className="nav-button">Profile</button>
+        </div>
+
+        <div className="menu-right">
+          <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
         </div>
       </nav>
 
       <div className="container">
-        <h2>Results for "{searchTerm}"</h2>
+        <h1>Results for "{searchTerm}"</h1>
         {isLoading && <p>Loading recipes...</p>}
         <div className="recipe-grid">
           {recipes.length > 0 ? (

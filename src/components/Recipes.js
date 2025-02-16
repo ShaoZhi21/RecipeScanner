@@ -7,10 +7,10 @@ const Recipes = () => {
     const initialSelectedIngredients = location.state?.selectedIngredients || [];
     const [selectedIngredients, setSelectedIngredients] = useState(initialSelectedIngredients);
     const [filteredMeals, setFilteredMeals] = useState(location.state?.meals || {});
+    const [allMeals, setAllMeals] = useState(location.state?.meals || {});  // Keep all meals before filtering
     const [displayIngredients, setDisplayIngredients] = useState([]); // To track currently displayed ingredients
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-
 
     // Update meals when selected ingredients change
     useEffect(() => {
@@ -27,9 +27,10 @@ const Recipes = () => {
         
                 // If there are meals, set the meals state with the data (mapping ingredients to meals)
                 if (Object.entries(data).length > 0) {
-                setFilteredMeals(data); // Store meals by ingredient (mapping)
+                    setAllMeals(data);  // Store all meals (before filtering)
+                    setFilteredMeals(data);  // Also set filtered meals initially
                 } else {
-                alert("No meals found for the selected ingredients.");
+                    alert("No meals found for the selected ingredients.");
                 }
         
             } catch (error) {
@@ -57,32 +58,33 @@ const Recipes = () => {
     return (
         <div>
         <nav className="top-menu">
-            <div className="menu-left">
-            <button onClick={() => navigate("/")} className="logobutton">
-                <img
-                src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-                alt="Source Academy Logo"
-                className="logo"
-                />
-            </button>
-            </div>
-            <div className="menu-right">
-            <input
-                type="text"
-                placeholder="Search recipes..."
-                className="search-bar"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+        <div className="menu-left">
+          <button onClick={() => navigate("/")} className="logobutton">
+            <img
+              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+              alt="Source Academy Logo"
+              className="logo"
             />
-            <button className="nav-button" onClick={() => navigate("/results", { state: { searchTerm } })}>
-                Search
-            </button>
-            <button className="nav-button" onClick={() => navigate("/myrecipes")}>
-              Saved Recipes
-            </button>
-            <button className="nav-button">Profile</button>
-            </div>
-        </nav>
+          </button>
+        </div>
+
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search recipes..."
+            className="search-bar"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
+            🔍
+          </button>
+        </div>
+
+        <div className="menu-right">
+          <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
+        </div>
+      </nav>
 
         <div className="container">
             {loading ? (
@@ -102,7 +104,7 @@ const Recipes = () => {
                 ))}
                 </div>
 
-                <h1>Recipe Results</h1>
+                
                 <div className="recipe-grid">
                 {Object.entries(filteredMeals).length > 0 ? (
                     Object.entries(filteredMeals).map(([ingredient, mealList]) => {
@@ -119,7 +121,7 @@ const Recipes = () => {
                                 navigate(`/recipe/${meal.idMeal}`, { state: { meal } })
                             }
                             >
-                            Read More
+                            Recipe
                             </button>
                         </div>
                         ));

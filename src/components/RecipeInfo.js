@@ -16,29 +16,7 @@ const RecipeInfo = () => {
   const currentUrl = window.location.href;
 
   useEffect(() => {
-    // Fetch saved recipes on load
-    fetchSavedRecipes();
-  }, []);
-
-  // Fetch saved recipes from the backend
-  const fetchSavedRecipes = async () => {
-    try {
-      const response = await axios.get("http://localhost:5001/saved-recipes");
-      setSavedRecipes(response.data.map(recipe => recipe.idMeal)); // Store only IDs for quick lookup
-    } catch (error) {
-      console.error("Error fetching saved recipes:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (location.state?.meal) {
-      // Use passed data if available for faster loading
-      setRecipe(location.state.meal);
-      setLoading(false);
-    } else {
-      // Fetch recipe details from TheMealDB API
-      fetchRecipeDetails(idMeal);
-    }
+    fetchRecipeDetails(idMeal);
   }, [idMeal, location.state]);
   
 
@@ -130,7 +108,8 @@ const RecipeInfo = () => {
             />
           </button>
         </div>
-        <div className="menu-right">
+
+        <div className="search-container">
           <input
             type="text"
             placeholder="Search recipes..."
@@ -138,21 +117,22 @@ const RecipeInfo = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="nav-button" onClick={() => navigate("/results", { state: { searchTerm } })}>
-            Search
+          <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
+            🔍
           </button>
-          <button className="nav-button" onClick={() => navigate("/myrecipes")}>
-            Saved Recipes
-          </button>
-          <button className="nav-button">Profile</button>
+        </div>
+
+        <div className="menu-right">
+          <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
         </div>
       </nav>
       
       <div className="recipe-detail">
+        <h1 className="recipe-title">{recipe.strMeal}</h1>
+        <div className="centralise-image">
         <img src={recipe.strMealThumb} alt={recipe.strMeal} className="recipe-image" />
-
+        </div>
         <div className="recipe-header">
-          <h1>{recipe.strMeal}</h1>
           <p><strong>Category:</strong> {recipe.strCategory}</p>
           <p><strong>Area:</strong> {recipe.strArea}</p>
         </div>

@@ -1,62 +1,144 @@
-/* ---------- Top Navigation Bar ---------- */
+/* ✅ Navbar Layout */
 .top-menu {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   background: #2c3e50;
-  padding: 15px 20px;
+  padding: 15px 5%;  /* ✅ Adjusted padding to be dynamic */
   color: white;
+  width: 100%;
+  max-width: 100vw; /* ✅ Ensures no overflow beyond the screen */
+  box-sizing: border-box;
 }
 
+/* ✅ Modern Circular Logo */
 .logobutton {
   display: flex;
-  align-items: center;  /* Align image and text vertically */
+  align-items: center;
   background: none;
   border: none;
-  font-size: 16px;
-  color: black;
   cursor: pointer;
 }
 
 .logo {
-  width: 100px;  /* Adjust the size of the logo */
-  height: 100px;
-  margin-right: 8px;  /* Space between the logo and the text */
+  width: 50px;  /* Adjusted size */
+  height: 50px;
+  border-radius: 50%; /* Circular */
+  background: white;
+  padding: 5px;
+  object-fit: contain;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
-.menu-left {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.menu-right {
+/* ✅ Centered Search Bar */
+.search-container {
+  flex-grow: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
+  max-width: 40vw; /* ✅ Limits max width so it doesn't take over the screen */
+  min-width: 250px; /* ✅ Ensures it doesn't shrink too much */
 }
 
 .search-bar {
-  padding: 10px;
-  margin-right: 10px;
-  border-radius: 5px;
+  width: 100%;
+  padding: 12px 20px;
   border: none;
-  width: 200px;
+  border-radius: 30px;
+  font-size: 16px;
+  outline: none;
+  background: white;
+  color: black;
 }
 
-.nav-button {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
+.search-icon {
+  margin-left: -40px;
+  background: none;
   border: none;
-  padding: 10px 15px;
-  margin-left: 10px;
+  font-size: 20px;
   cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  transition: 0.3s;
 }
 
-.nav-button:hover {
-  transform: scale(1.05);
+/* ✅ "Saved Recipes" Positioned to Right */
+.menu-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 0;
+  text-align: right;
+  min-width: 120px;
+}
+
+
+.nav-link {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff; /* White text color */
+  background-color: #1a73e8; /* Blue background */
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none; /* Remove underline */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #1558a6; /* Darker blue on hover */
+  transform: translateY(-2px); /* Slight elevation effect */
+  cursor: pointer;
+}
+
+.nav-link:active {
+  background-color: #003f7f; /* Even darker blue on click */
+  transform: translateY(0); /* Reset elevation */
+}
+
+/* Optional: Icon styles */
+.nav-link i {
+  font-size: 1.5rem; /* Icon size */
+}
+
+/* Optional: Focus Styles */
+.nav-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.5); /* Focus state for accessibility */
+}
+
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 1024px) {
+  .top-menu {
+    padding: 15px 3%;
+  }
+
+  .search-container {
+    max-width: 50vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-menu {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .menu-left {
+    margin-bottom: 10px;
+  }
+
+  .search-container {
+    width: 80%;
+    max-width: none;
+  }
+
+  .menu-right {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 /* ---------- Home Page Styles ---------- */
@@ -176,6 +258,22 @@
   place-items: center; /* Centers both horizontally & vertically */
 }
 
+.no-recipes-message {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto auto;
+  border: 10px solid black;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #666; /* Light grey color */
+  text-align: center;
+}
+
 .recipe-card {
   position: relative;
   background: white;
@@ -186,6 +284,10 @@
   transition: transform 0.3s ease;
   width: 100%; /* Makes cards fit inside the grid column */
   height: 100%;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+
 }
 
 .recipe-card:hover {
@@ -321,12 +423,17 @@
   border: 1px solid #ddd; /* Light border around each rectangle */
   display: flex;
   align-items: center; /* Centers the text vertically */
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .ingredient {
   font-size: 14px; /* Adjust font size */
-  color: #333; /* Dark text color */
 }
+
+.ingredient-item:hover {
+  scale: 1.1;
+}
+
 
 .add-button,
 .remove-button {
@@ -372,140 +479,270 @@
   background-color: #e74c2e;
 }
 
-/* -----------Recipe Info Page--------------*/
 .recipe-detail {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 800px;
-  margin: 40px auto;
+  background-color: #fff; /* White background for the main content */
+  margin: 20px auto;
   padding: 20px;
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); /* Soft gradient background */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.recipe-image {
-  width: 100%;
   max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.centralise-image{
+  display: flex;
+  justify-content: center;
+}
+.recipe-image {
+  width: 600px;
+  height: 600px;
+  border-radius: 8px;
+}
 
-/* Recipe Header */
-.recipe-header {
-  text-align: center;
-  margin-bottom: 15px;
+.recipe-title {
+  color: #1a73e8; /* Blue color for the title */
+  font-size: 3rem;
+  margin-bottom: 10px;
 }
 
 .recipe-header h1 {
-  font-size: 32px;
-  color: #ff5722; /* Warm orange */
-  text-transform: uppercase;
-  margin-bottom: 5px;
-  letter-spacing: 1px;
+  color: #1a73e8; /* Blue color for the title */
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 .recipe-header p {
-  font-size: 18px;
+  font-size: 1rem;
   color: #555;
   margin: 5px 0;
 }
 
-/* Ingredients & Instructions Section */
-.ingredients-list, .instructions {
-  width: 100%;
-  text-align: left;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.85); /* Slightly transparent background */
-  border-radius: 10px;
-  margin-bottom: 15px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.ingredients-list h3, .instructions h3 {
-  color: #d84315; /* Dark orange */
-  border-bottom: 3px solid #ff7043;
-  padding-bottom: 5px;
+.recipe-header strong {
+  color: #1a73e8; /* Blue color for the labels */
 }
 
 /* Ingredients List */
+.ingredients-list h3 {
+  color: #1a73e8;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
 .ingredients-list ul {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
 }
 
 .ingredients-list li {
-  background: #ffe0b2;
+  background-color: #f1f8ff; /* Light blue background for each ingredient */
   padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  transition: background 0.3s ease-in-out;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: #333;
 }
 
-.ingredients-list li:hover {
-  background: #ffcc80;
-}
-
-/* Instructions Text */
-.instructions p {
-  line-height: 1.6;
-  font-size: 16px;
-  color: #444;
-}
-
-/* Back Button */
-.back-button {
-  background: #ff7043;
-  color: white;
-  padding: 12px 18px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s;
-}
-
-.back-button:hover {
-  background: #d84315;
-  transform: scale(1.1);
+/* Instructions Section */
+.instructions h3 {
+  color: #1a73e8;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
 }
 
 .instructions ul {
-  list-style: decimal; /* Adds numbers to steps */
-  padding-left: 20px;
+  list-style-type: decimal;
+  margin-left: 20px;
 }
 
 .instructions li {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  background: #f7f7f7;
-  padding: 8px;
-  border-radius: 5px;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 12px;
 }
 
-.buttonsflex{
-  display:flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 200px;
-}
-
-.social-share-buttons {
+/* Buttons */
+.buttonsflex {
+  display: flex;
+  justify-content: space-between;
   margin-top: 20px;
-  text-align: center;
+}
+
+.add-button-info, .back-button {
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.add-button-info {
+  background-color: #1a73e8; /* Blue background for Add button */
+  color: #fff;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.add-button-info:hover {
+  background-color: #1558a6; /* Darker blue on hover */
+}
+
+.back-button {
+  background-color: #e0e0e0; /* Grey background for Back button */
+  color: #333;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #bdbdbd; /* Darker grey on hover */
+}
+
+/* Social Share Buttons */
+.social-share-buttons {
+  margin-top: 30px;
+}
+
+.social-share-buttons h3 {
+  font-size: 1.25rem;
+  color: #1a73e8;
 }
 
 .social-buttons {
   display: flex;
-  justify-content: center;
   gap: 15px;
+  margin-top: 10px;
 }
 
-.social-buttons a {
-  text-decoration: none;
+/* Social Media Button Styling */
+.social-buttons .social-share-button {
+  background-color: #f1f8ff; /* Light blue background for social buttons */
+  border-radius: 50%;
+  padding: 10px;
+  transition: transform 0.3s ease;
+}
+
+.social-buttons .social-share-button:hover {
+  transform: scale(1.1);
+}
+
+/* Recipe Card */
+.recipe-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.recipe-card h3 {
+  color: #1a73e8;
+  font-size: 1.2rem;
+}
+
+.ingredient-tag {
+  background-color: #e0f7fa; /* Light blue background */
+  color: #00796b; /* Teal text color */
+  padding: 10px 20px; /* Padding to make it look like a button */
+  border-radius: 20px; /* Rounded edges */
+  font-size: 1rem; /* Slightly larger text for visibility */
+  margin-top: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth color transition */
+  display: inline-block; /* Keeps tags in a row */
+  border: none; /* Removes any default button border */
+}
+
+.read-more-button {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.read-more-button:hover {
+  background-color: #1558a6;
+}
+
+.container.main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* Adds spacing */
+  align-items: flex-start; /* Aligns items at the top */
+  gap: 20px; /* Adds space between the two sections */
+}
+
+
+.container-left {
+  flex: 5; /* Takes up more space (2 parts) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+
+  .container-right {
+    flex: 3; /* Takes up less space (1 part) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+
+.ingredient-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers horizontally */
+  justify-content: center; /* Centers vertically */
+  text-align: center;
+  flex-grow: 1; /* Takes up available space, keeping it centered */
+}
+
+/* Container for the ingredient buttons */
+.ingredient-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;  /* Spacing between the buttons */
+  padding-bottom: 50px;  /* Padding at the bottom of the div */
+}
+
+/* Default button style */
+.ingredient-button {
+  background-color: #f0f8ff; /* Light blue background */
+  color: #007bff;  /* Blue text color */
+  border: 2px solid #007bff; /* Blue border */
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition on hover and click */
+}
+
+/* Active button style when clicked */
+.ingredient-button.active {
+  background-color: #007bff;  /* Blue background when active */
+  color: #fff;  /* White text color when active */
+  border: 2px solid #0056b3;  /* Darker blue border when active */
+}
+
+/* Hover effect for buttons */
+.ingredient-button:hover {
+  background-color: #e1f0ff; /* Lighter blue background on hover */
+  border-color: #0056b3;  /* Darker blue border on hover */
+}
+
+/* Active button hover state to keep the contrast */
+.ingredient-button.active:hover {
+  background-color: #0056b3;  /* Darker blue background when active and hovered */
+  border-color: #004085;  /* Even darker border when active and hovered */
 }

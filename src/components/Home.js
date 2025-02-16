@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
+
 function Home() {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -13,6 +14,10 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [clickedIngredients, setClickedIngredients] = useState([]);
+  const [showRightContainer, setShowRightContainer] = useState(false);
+
+
+
 
   const handleFileSelect = (file) => {
     if (file) {
@@ -21,18 +26,22 @@ function Home() {
     }
   };
 
+
   const handleImageUpload = (event) => {
     handleFileSelect(event.target.files[0]);
   };
+
 
   const handleDragOver = (event) => {
     event.preventDefault();
     setDragging(true);
   };
 
+
   const handleDragLeave = () => {
     setDragging(false);
   };
+
 
   const handleDrop = (event) => {
     event.preventDefault();
@@ -42,41 +51,49 @@ function Home() {
     }
   };
 
+
   const uploadImage = async () => {
     if (!image) {
       alert("Please select an image first.");
       return;
     }
-  
+ 
     setUploading(true);
     const formData = new FormData();
     formData.append("file", image);
-  
+ 
     try {
       // Send image to the backend
       const response = await axios.post("http://localhost:5001/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+ 
       // Store the URL and description returned by the server
       const uploadedImageUrl = response.data.url;
       const imageDescription = response.data.description;
-  
+ 
       // Remove the Markdown formatting (the backticks and "json" part)
       const cleanDescription = imageDescription.replace(/```json|\n|```/g, '').trim();
-  
+ 
       // Parse the clean JSON string
       const parsedDescription = JSON.parse(cleanDescription);
       setFileUrl(uploadedImageUrl);
       setIngredients(parsedDescription.ingredients);
-  
-      alert("Image uploaded successfully!");
+ 
+      if (parsedDescription.ingredients.length > 0) {
+        setShowRightContainer(true);
+      } else {
+        alert("No ingredients found. Please try again.");
+      }
+
+
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Failed to upload image.");
     }
     setUploading(false);
   };
+
 
   const pushToClicked = (ingredient) => {
     setClickedIngredients((prev) =>
@@ -86,21 +103,22 @@ function Home() {
     );
   };
 
+
   const goToRecipes = async () => {
     if (clickedIngredients.length === 0) {
       alert("Please select at least one ingredient!");
       return;
     }
-  
+ 
     try {
       const query = clickedIngredients.join(",");
       const response = await fetch(`http://localhost:5001/filter-meals?q=${query}`);
       const data = await response.json();
       console.log("Received data:", data);
-  
+ 
       // Flatten all meals from all ingredients
-      const meals = Object.values(data).flat(); 
-  
+      const meals = Object.values(data).flat();
+ 
       // Check if there are meals
       if (meals.length > 0) {
         navigate("/recipes", { state: { selectedIngredients: clickedIngredients, meals: meals } });
@@ -112,21 +130,22 @@ function Home() {
       alert("Failed to fetch recipes.");
     }
   };  
-  
-  
+ 
+ 
   return (
     <div>
       <nav className="top-menu">
-      <div className="menu-left">
-      <button onClick={() => navigate("/")} className="logobutton">
-        <img
-          src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-          alt="Source Academy Logo"
-          className="logo"
-        />
-      </button>
-      </div>
-        <div className="menu-right">
+        <div className="menu-left">
+          <button onClick={() => navigate("/")} className="logobutton">
+            <img
+              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+              alt="Source Academy Logo"
+              className="logo"
+            />
+          </button>
+        </div>
+
+        <div className="search-container">
           <input
             type="text"
             placeholder="Search recipes..."
@@ -134,92 +153,79 @@ function Home() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="nav-button" onClick={() => navigate("/results", { state: { searchTerm } })}>
-            Search
+          <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
+            🔍
           </button>
-          <button className="nav-button" onClick={() => navigate("/myrecipes")}>
-            Saved Recipes
-          </button>
-          <button className="nav-button">Profile</button>
+        </div>
+
+        <div className="menu-right">
+          <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
         </div>
       </nav>
 
-
-      <div className="container">
-        <h2>Find Recipes</h2>
-
-        <div
+      <div className="container main">
+        <div className="container-left">
+          <h2>Find Recipes</h2>
+          <div
           className={`drop-area ${dragging ? "dragging" : ""}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => document.getElementById("fileInput").click()}
-        >
-          {previewUrl ? (
-            <img src={previewUrl} alt="Preview" className="image-preview" />
-          ) : (
-            <p>Drag & Drop an image here or <span>click to select</span></p>
-          )}
-          <input id="fileInput" type="file" accept="image/*" onChange={handleImageUpload} hidden />
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="Preview" className="image-preview" />
+            ) : (
+              <p>Drag & Drop an image here or <span>click to select</span></p>
+            )}
+            <input id="fileInput" type="file" accept="image/*" onChange={handleImageUpload} hidden />
+          </div>
+
+
+          <button className="primary-button" onClick={uploadImage} disabled={uploading}>
+            {uploading ? "Uploading..." : "Get Ingredients"}
+          </button>
         </div>
 
-        <button className="primary-button" onClick={uploadImage} disabled={uploading}>
-          {uploading ? "Uploading..." : "Get Ingredients"}
-        </button>
 
-        {fileUrl && (
-          <div>
-            <h3>Uploaded!</h3>
-            {ingredients.length > 0 && (
-              <div>
-                <h3>Ingredients:</h3>
-                <div className="ingredients-container">
-                  {ingredients.map((ingredient, index) => (
-                    <div 
-                      key={index} 
-                      className="ingredient-item" 
-                      onClick={() => pushToClicked(ingredient)} 
-                      style={{
-                        cursor: "pointer",
-                        color: clickedIngredients.includes(ingredient) ? "green" : "blue", // Change color if selected
-                        fontWeight: clickedIngredients.includes(ingredient) ? "bold" : "normal",
-                      }} >
-                      <div className="ingredient">{ingredient}</div>
-                    </div>
-                  ))}
-                </div>
-                {clickedIngredients.length > 0 && (
-                  <div>
-                    {clickedIngredients.length > 0 && (
-                      <div>
-                        <h3>Selected Ingredients:</h3>
-                        <div className="ingredients-container">
-                          {clickedIngredients.map((ingredient, index) => (
-                            <div 
-                              key={index} 
-                              className="ingredient-item" 
-                              onClick={() => pushToClicked(ingredient)}
-                              style={{
-                                cursor: "pointer",
-                                color: clickedIngredients.includes(ingredient) ? "green" : "blue",
-                                fontWeight: clickedIngredients.includes(ingredient) ? "bold" : "normal",
-                              }}>
-                              <div className="ingredient">{ingredient}</div>
-                            </div>
-                          ))}
-                        </div>
+        {showRightContainer && (
+        <div className="container-right">
+          <h2>Ingredients:</h2>
+          {fileUrl && (
+            <div className="ingredient-div">
+              {ingredients.length > 0 && (
+                <div>
+                  <div className="ingredients-container">
+                    {ingredients.map((ingredient, index) => (
+                      <div
+                        key={index}
+                        className="ingredient-item"
+                        onClick={() => pushToClicked(ingredient)}
+                        style={{
+                          cursor: "pointer",
+                          background: clickedIngredients.includes(ingredient) ? "#007bff" : "#f0f0f0",
+                          color: clickedIngredients.includes(ingredient) ? "white" : "black",
+                          fontWeight: clickedIngredients.includes(ingredient) ? "bold" : "normal",
+                        }}
+                      >
+                        <div className="ingredient">{ingredient}</div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                )}
-                <button className="primary-button" onClick={goToRecipes} disabled={uploading}>Find Recipes!</button>
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          )}
+          <button className="primary-button" onClick={goToRecipes} disabled={uploading}>Find Recipes!</button>
+        </div>
+      )}
       </div>
     </div>
   );
 }
 
+
 export default Home;
+
+
+
