@@ -146,7 +146,7 @@ function Home() {
 
 
       <div className="container">
-        <h1>Upload Image to find Recipes</h1>
+        <h2>Find Recipes</h2>
 
         <div
           className={`drop-area ${dragging ? "dragging" : ""}`}

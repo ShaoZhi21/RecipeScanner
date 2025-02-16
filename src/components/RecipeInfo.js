@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { TelegramShareButton, TwitterShareButton, LinkedinShareButton, WhatsappShareButton } from 'react-share';
+import { TelegramIcon, TwitterIcon, LinkedinIcon, WhatsappIcon } from 'react-share';
 
 const RecipeInfo = () => {
   const { idMeal } = useParams(); // Get the meal id from URL
@@ -10,6 +12,8 @@ const RecipeInfo = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const currentUrl = window.location.href;
 
   useEffect(() => {
     // Fetch saved recipes on load
@@ -36,6 +40,7 @@ const RecipeInfo = () => {
       fetchRecipeDetails(idMeal);
     }
   }, [idMeal, location.state]);
+  
 
   const fetchRecipeDetails = async (id) => {
     try {
@@ -63,18 +68,22 @@ const RecipeInfo = () => {
   
       // Fetch the recipe details based on idMeal from TheMealDB API
       const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`);
-      const recipe = response.data.meals[0]; // Get the first meal from the response
       
-      console.log("Fetched recipe:", recipe); // Log the fetched recipe
+      if (response.data.meals && response.data.meals.length > 0) {
+        const recipe = response.data.meals[0]; // Get the first meal from the response
+        console.log("Fetched recipe:", recipe); // Log the fetched recipe
   
-      // Now post the full recipe data to save it to the local database
-      await axios.post("http://localhost:5001/save-recipe", recipe);
+        // Now post the full recipe data to save it to the local database
+        await axios.post("http://localhost:5001/save-recipe", recipe);
   
-      // Update saved list with the idMeal (no need to store the entire recipe object)
-      setSavedRecipes(prev => {
-        console.log("Updating saved recipes list. New list:", [...prev, idMeal]);
-        return [...prev, idMeal];
-      });
+        // Update saved list with the idMeal (no need to store the entire recipe object)
+        setSavedRecipes(prev => {
+          console.log("Updating saved recipes list. New list:", [...prev, idMeal]);
+          return [...prev, idMeal];
+        });
+      } else {
+        console.error("No meals found for the provided idMeal:", idMeal);
+      }
   
     } catch (error) {
       // Log detailed error information
@@ -175,45 +184,39 @@ const RecipeInfo = () => {
               }) || <li>No instructions available.</li>}
           </ul>
         </div>
-        <div>
-        <button 
-  className={`add-button ${savedRecipes.includes(idMeal) ? "saved" : ""}`}
-  style={{ 
-    cursor: "pointer",
-    background: savedRecipes.includes(idMeal) ? "#33b249" : "#F9F9F9",
-    color: savedRecipes.includes(idMeal) ? "white" : "black",
-    padding: "8px 16px", // Adjust padding to match back button size
-    fontSize: "14px", // Match font size to back button
-    borderRadius: "4px", // Add a slight border radius for consistent look
-    border: "1px solid #ccc", // Optional: Add a border for styling
-    marginRight: "10px", // Optional: Add spacing between buttons
-  }}
-  onClick={(e) => {
-    e.stopPropagation(); // Prevent the click from triggering the parent div's onClick
-    if (savedRecipes.includes(idMeal)) {
-      removeSavedRecipe(idMeal); // Remove if already saved
-    } else {  
-      saveRecipe(idMeal); // Save if not saved
-    }
-  }}
-  onMouseEnter={(e) => {
-    // Darken the background on hover
-    e.target.style.background = savedRecipes.includes(idMeal)
-      ? "#4CAF50" // Darker green
-      : "#e0e0e0"; // Slightly darker gray
-  }}
-  onMouseLeave={(e) => {
-    // Reset to the original background when mouse leaves
-    e.target.style.background = savedRecipes.includes(idMeal)
-      ? "#33b249"
-      : "#F9F9F9";
-  }}
->
-  {savedRecipes.includes(idMeal) ? "Added!" : "Add"}
-</button>
-<button className="back-button" onClick={() => navigate(-1)}>Back</button>
-
+        <div className="buttonsflex">
+          <button 
+            className="add-button-info"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent the click from triggering the parent div's onClick
+              if (savedRecipes.includes(idMeal)) {
+                removeSavedRecipe(idMeal); // Remove if already saved
+              } else {  
+                saveRecipe(idMeal); // Save if not saved
+              }
+            }}
+          >
+            {savedRecipes.includes(idMeal) ? "Added!" : "Add"}
+          </button>
+          <button className="back-button" onClick={() => navigate(-1)}>Back</button>
         </div>
+        <div className="social-share-buttons">
+        <h3>Share this recipe:</h3>
+        <div className="social-buttons">
+          <TelegramShareButton url={currentUrl} quote={`Check out this delicious recipe: ${recipe.strMeal}`}>
+            <TelegramIcon size={32} round={true} />
+          </TelegramShareButton>
+          <TwitterShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`}>
+            <TwitterIcon size={32} round={true} />
+          </TwitterShareButton>
+          <LinkedinShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
+            <LinkedinIcon size={32} round={true} />
+          </LinkedinShareButton>
+          <WhatsappShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
+            <WhatsappIcon size={32} round={true} />
+          </WhatsappShareButton>
+        </div>
+      </div>
       </div>
     </div>
   );

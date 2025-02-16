@@ -7,8 +7,9 @@ const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(location.state?.searchTerm || ""); 
   const [savedRecipes, setSavedRecipes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchSavedRecipes(); // ✅ Fetch saved recipes on load
@@ -18,19 +19,28 @@ const Results = () => {
   const fetchSavedRecipes = async () => {
     try {
       const response = await axios.get("http://localhost:5001/saved-recipes");
-      setSavedRecipes(response.data.map(recipe => recipe.idMeal)); // ✅ Store only IDs for quick lookup
+      setSavedRecipes(response.data.map(recipe => recipe.idMeal));
     } catch (error) {
       console.error("Error fetching saved recipes:", error);
     }
   };
 
-  // ✅ Fetch meals in parallel for faster speed
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      fetchMoreRecipes(15); // ✅ Fetch exactly 15 meals initially
+    } else {
+      fetchRecipesBySearch(searchTerm);
+    }
+  }, [searchTerm]);
+
+  // ✅ Fetch multiple random recipes efficiently
   const fetchMoreRecipes = useCallback(async (count) => {
+    setIsLoading(true);
     try {
-      const requests = Array.from({ length: count }, () => 
+      const requests = Array.from({ length: count }, () =>
         axios.get(`https://www.themealdb.com/api/json/v1/1/random.php`)
       );
-      
+
       const responses = await Promise.all(requests);
       let newRecipes = responses.flatMap(res => res.data.meals || []);
 
@@ -40,41 +50,15 @@ const Results = () => {
         );
         return [...prevRecipes, ...uniqueMeals.slice(0, count)];
       });
-
     } catch (error) {
       console.error("Error fetching more recipes:", error);
     }
+    setIsLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (!location.state?.ingredients && !location.state?.searchTerm) {
-      fetchMoreRecipes(25);
-    } else if (location.state?.ingredients) {
-      fetchRecipesByIngredients(location.state.ingredients);
-    } else if (location.state?.searchTerm) {
-      setSearchTerm(location.state.searchTerm);
-    }
-  }, [location.state, fetchMoreRecipes]);
-
-  useEffect(() => {
-    if (searchTerm.trim() !== "") {
-      fetchRecipesBySearch(searchTerm);
-    }
-  }, [searchTerm]);
-
-  const fetchRecipesByIngredients = async (ingredients) => {
-    try {
-      const ingredientQuery = ingredients.join(",");
-      const response = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredientQuery}`
-      );
-      setRecipes(response.data.meals || []);
-    } catch (error) {
-      console.error("Error fetching recipes by ingredients:", error);
-    }
-  };
-
+  // ✅ Fetch recipes by search term
   const fetchRecipesBySearch = async (query) => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
@@ -83,23 +67,24 @@ const Results = () => {
     } catch (error) {
       console.error("Error searching recipes:", error);
     }
+    setIsLoading(false);
   };
 
   // ✅ Add recipe to local database
   const saveRecipe = async (recipe) => {
     try {
       await axios.post("http://localhost:5001/save-recipe", recipe);
-      setSavedRecipes(prev => [...prev, recipe.idMeal]); // ✅ Update saved list without alert
+      setSavedRecipes(prev => [...prev, recipe.idMeal]);
     } catch (error) {
       console.error("Error saving recipe:", error);
     }
   };
 
-   // ✅ Remove recipe from local database
-   const removeSavedRecipe = async (idMeal) => {
+  // ✅ Remove recipe from local database
+  const removeSavedRecipe = async (idMeal) => {
     try {
       await axios.delete(`http://localhost:5001/saved-recipes/${idMeal}`);
-      setSavedRecipes(prev => prev.filter(recipeId => recipeId !== idMeal)); // ✅ Update UI to remove the recipe
+      setSavedRecipes(prev => prev.filter(recipeId => recipeId !== idMeal));
     } catch (error) {
       console.error("Error removing saved recipe:", error);
     }
@@ -108,15 +93,15 @@ const Results = () => {
   return (
     <div>
       <nav className="top-menu">
-      <div className="menu-left">
-      <button onClick={() => navigate("/")} className="logobutton">
-        <img
-          src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-          alt="Source Academy Logo"
-          className="logo"
-        />
-      </button>
-      </div>
+        <div className="menu-left">
+          <button onClick={() => navigate("/")} className="logobutton">
+            <img
+              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+              alt="Source Academy Logo"
+              className="logo"
+            />
+          </button>
+        </div>
         <div className="menu-right">
           <input
             type="text"
@@ -125,7 +110,7 @@ const Results = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button className="nav-button" onClick={() => navigate("/results", { state: { searchTerm } })}>
+          <button className="nav-button" onClick={() => fetchRecipesBySearch(searchTerm)}>
             Search
           </button>
           <button className="nav-button" onClick={() => navigate("/myrecipes")}>
@@ -136,7 +121,8 @@ const Results = () => {
       </nav>
 
       <div className="container">
-        <h1>Recipe Results</h1>
+        <h2>Results for "{searchTerm}"</h2>
+        {isLoading && <p>Loading recipes...</p>}
         <div className="recipe-grid">
           {recipes.length > 0 ? (
             recipes.map((meal) => (
@@ -155,10 +141,8 @@ const Results = () => {
                 style={{ cursor: "pointer" }}>
                 <img src={meal.strMealThumb} alt={meal.strMeal} />
                 <h3>{meal.strMeal}</h3>
-                <p className="recipe-description">
-                  {meal.strInstructions?.slice(0, 100)}...
-                </p>
-                 <button 
+                <p className="recipe-description">{meal.strInstructions?.slice(0, 100)}...</p>
+                <button 
                   className={`add-button ${savedRecipes.includes(meal.idMeal) ? "saved" : ""}`}
                   style={{ 
                       cursor: "pointer",
@@ -166,21 +150,19 @@ const Results = () => {
                       color: savedRecipes.includes(meal.idMeal) ? "white" : "black",
                     }}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent the click from triggering the parent div's onClick
+                    e.stopPropagation();
                     if (savedRecipes.includes(meal.idMeal)) {
-                      removeSavedRecipe(meal.idMeal); // Remove if already saved
+                      removeSavedRecipe(meal.idMeal);
                     } else {  
-                      saveRecipe(meal); // Save if not saved
+                      saveRecipe(meal);
                     }
                   }}
                   onMouseEnter={(e) => {
-                    // Darken the background on hover
                     e.target.style.background = savedRecipes.includes(meal.idMeal)
-                      ? "#4CAF50" // Darker green
-                      : "#e0e0e0"; // Slightly darker gray
+                      ? "#4CAF50"
+                      : "#e0e0e0";
                   }}
                   onMouseLeave={(e) => {
-                    // Reset to the original background when mouse leaves
                     e.target.style.background = savedRecipes.includes(meal.idMeal)
                       ? "#33b249"
                       : "#F9F9F9";
@@ -194,7 +176,8 @@ const Results = () => {
             <p>No recipes found.</p>
           )}
         </div>
-        <button className="primary-button load-more" onClick={() => fetchMoreRecipes(10)}>
+
+        <button className="primary-button load-more" onClick={() => fetchMoreRecipes(9)}>
           Load More Recipes
         </button>
       </div>

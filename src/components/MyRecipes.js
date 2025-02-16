@@ -12,15 +12,19 @@ const MyRecipes = () => {
     fetchSavedRecipes();
   }, []);
 
-  // ✅ Fetch saved recipes from the server
   const fetchSavedRecipes = async () => {
     try {
       const response = await axios.get("http://localhost:5001/saved-recipes");
-      setSavedRecipes(response.data); // ✅ Ensure we store actual recipe objects
+      
+      // Filter out any empty objects from the response data
+      const filteredRecipes = response.data.filter(recipe => Object.keys(recipe).length > 0);
+      
+      setSavedRecipes(filteredRecipes); // ✅ Store only valid recipes
     } catch (error) {
       console.error("Error fetching saved recipes:", error);
     }
   };
+  
 
   // ✅ Function to remove saved recipe
   const removeSavedRecipe = async (idMeal) => {

@@ -69,31 +69,58 @@
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  height: 75vh;
+  overflow-y: auto; 
+  display:flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
 }
 
-/* ✅ Drag & Drop Upload (Centered) */
+
 .drop-area {
-  border: 2px dashed #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  text-align: center;
-  font-size: 16px;
-  background: #f8f9fa;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out;
   width: 100%;
-  max-width: 400px; /* ✅ Fixed width */
-  height: 250px; /* ✅ Fixed height */
+  max-width: 500px; /* Max width to avoid it becoming too large */
+  height: 350px; /* Adjust the height as needed */
   display: flex;
-  align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-  margin: 0 auto; /* ✅ Ensures centering */
+  align-items: center;
+  border: 3px dashed #4CAF50; /* Modern green color for the border */
+  background-color: #f1f1f1; /* Lighter background */
+  border-radius: 10px; /* Rounded corners for a smooth, modern look */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  cursor: pointer; /* Pointer cursor when hovering */
 }
 
 .drop-area:hover {
-  background: #e9ecef;
+  border-color: #66bb6a; /* Slightly darker green on hover */
+  background-color: #e9f7e8; /* Light green background on hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Slightly bigger shadow */
+}
+
+.image-preview {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Ensure the image doesn't get cropped */
+  border-radius: 8px; /* Round the corners of the image for a polished look */
+}
+
+.drop-area p {
+  font-size: 16px;
+  color: #666; /* Lighter gray text */
+  font-weight: 500;
+  text-align: center;
+  transition: color 0.3s ease; /* Transition for text color change */
+}
+
+.drop-area span {
+  color: #4CAF50; /* Highlighted clickable text in green */
+  text-decoration: underline;
+}
+
+.drop-area:hover p {
+  color: #333; /* Darker text color when hovering */
 }
 
 .drop-area.dragging {
@@ -315,6 +342,28 @@
   background: #f9f9f9;
 }
 
+.add-button-info {
+  background: #33b249;  /* Green background */
+  color: white;
+  padding: 12px 18px;  /* Same padding as .back-button */
+  font-size: 16px;      /* Same font size as .back-button */
+  font-weight: bold;    /* Same font weight as .back-button */
+  border: none;
+  border-radius: 8px;   /* Same border radius as .back-button */
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s;
+  width: 80px;
+  display:flex;
+  justify-content: center;
+}
+
+.add-button-info:hover {
+  background: #4CAF50; /* Darker green on hover */
+  transform: scale(1.05); /* Slight scaling effect on hover */
+}
+
+
+
 .remove-button {
   background-color: #ff5733;
   color: white;
@@ -437,4 +486,26 @@
   background: #f7f7f7;
   padding: 8px;
   border-radius: 5px;
+}
+
+.buttonsflex{
+  display:flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 200px;
+}
+
+.social-share-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-buttons a {
+  text-decoration: none;
 }
