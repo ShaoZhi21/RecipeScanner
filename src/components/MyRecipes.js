@@ -42,14 +42,16 @@ const MyRecipes = () => {
   return (
     <div>
       <nav className="top-menu">
-        <div className="menu-left">
-          <button onClick={() => navigate("/")} className="logobutton">
-            <img
-              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-              alt="Source Academy Logo"
-              className="logo"
-            />
-          </button>
+      <div className="top-left">
+          <div className="menu-left">
+            <button onClick={() => navigate("/")} className="logobutton">
+              <img
+                src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+                alt="Source Academy Logo"
+                className="logo"
+              />
+            </button>
+          </div>
         </div>
 
         <div className="search-container">
@@ -81,7 +83,7 @@ const MyRecipes = () => {
           style={{ cursor: "pointer" }}>
           <img src={meal.strMealThumb} alt={meal.strMeal} />
           <h3>{meal.strMeal}</h3>
-          <p className="recipe-description">{meal.strInstructions?.slice(0, 100)}...</p>
+
           <button 
               style={{ cursor: "pointer" }}
               onClick={(e) => {

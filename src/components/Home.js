@@ -15,8 +15,7 @@ function Home() {
   const navigate = useNavigate();
   const [clickedIngredients, setClickedIngredients] = useState([]);
   const [showRightContainer, setShowRightContainer] = useState(false);
-
-
+  const [manualIngredient, setManualIngredient] = useState(""); // State for the manually inputted ingredient
 
 
   const handleFileSelect = (file) => {
@@ -86,7 +85,6 @@ function Home() {
         alert("No ingredients found. Please try again.");
       }
 
-
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Failed to upload image.");
@@ -129,20 +127,32 @@ function Home() {
       console.error("Error fetching recipes:", error);
       alert("Failed to fetch recipes.");
     }
-  };  
- 
+  };
+
+  // Function to handle adding the manual ingredient
+  const handleManualIngredient = () => {
+    if (manualIngredient && !ingredients.includes(manualIngredient)) {
+      setIngredients((prev) => [...prev, manualIngredient]);
+      setManualIngredient(""); // Clear the input after adding the ingredient
+    } else {
+      alert("Please enter a valid ingredient.");
+    }
+  };
+
  
   return (
     <div>
       <nav className="top-menu">
-        <div className="menu-left">
-          <button onClick={() => navigate("/")} className="logobutton">
-            <img
-              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-              alt="Source Academy Logo"
-              className="logo"
-            />
-          </button>
+      <div className="top-left">
+          <div className="menu-left">
+            <button onClick={() => navigate("/")} className="logobutton">
+              <img
+                src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+                alt="Source Academy Logo"
+                className="logo"
+              />
+            </button>
+          </div>
         </div>
 
         <div className="search-container">
@@ -181,7 +191,6 @@ function Home() {
             <input id="fileInput" type="file" accept="image/*" onChange={handleImageUpload} hidden />
           </div>
 
-
           <button className="primary-button" onClick={uploadImage} disabled={uploading}>
             {uploading ? "Uploading..." : "Get Ingredients"}
           </button>
@@ -214,8 +223,20 @@ function Home() {
                   </div>
                 </div>
               )}
+              {/* Manual Ingredient Input */}
+              <div className="manual-ingredient">
+                <input
+                  type="text"
+                  placeholder="Enter an ingredient"
+                  value={manualIngredient}
+                  onChange={(e) => setManualIngredient(e.target.value)}
+                />
+                <button onClick={handleManualIngredient}>Add</button>
+              </div>
             </div>
           )}
+
+
           <button className="primary-button" onClick={goToRecipes} disabled={uploading}>Find Recipes!</button>
         </div>
       )}
@@ -226,6 +247,3 @@ function Home() {
 
 
 export default Home;
-
-
-

@@ -92,15 +92,17 @@ const Results = () => {
 
   return (
     <div>
-<nav className="top-menu">
-        <div className="menu-left">
-          <button onClick={() => navigate("/")} className="logobutton">
-            <img
-              src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-              alt="Source Academy Logo"
-              className="logo"
-            />
-          </button>
+    <nav className="top-menu">
+      <div className="top-left">
+          <div className="menu-left">
+            <button onClick={() => navigate("/")} className="logobutton">
+              <img
+                src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+                alt="Source Academy Logo"
+                className="logo"
+              />
+            </button>
+          </div>
         </div>
 
         <div className="search-container">
@@ -143,12 +145,11 @@ const Results = () => {
                 <img src={meal.strMealThumb} alt={meal.strMeal} />
                 <h3>{meal.strMeal}</h3>
                 <p className="recipe-description">{meal.strInstructions?.slice(0, 100)}...</p>
-                <button 
+                <button
                   className={`add-button ${savedRecipes.includes(meal.idMeal) ? "saved" : ""}`}
-                  style={{ 
+                  style={{
                       cursor: "pointer",
-                      background: savedRecipes.includes(meal.idMeal) ? "#F9F9F9" : "#1a73e8",
-                      color: savedRecipes.includes(meal.idMeal) ? "white" : "black",
+                      background: savedRecipes.includes(meal.idMeal) ? "#33b249" : "#3F88F4"
                     }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -160,13 +161,13 @@ const Results = () => {
                   }}
                   onMouseEnter={(e) => {
                     e.target.style.background = savedRecipes.includes(meal.idMeal)
-                      ? "#4CAF50"
-                      : "#e0e0e0";
+                      ? "#278a3a"
+                      : "#2c67c2";
                   }}
                   onMouseLeave={(e) => {
                     e.target.style.background = savedRecipes.includes(meal.idMeal)
                       ? "#33b249"
-                      : "#F9F9F9";
+                      : "#3F88F4";
                   }}
                 >
                   {savedRecipes.includes(meal.idMeal) ? "Added!" : "Add"}
