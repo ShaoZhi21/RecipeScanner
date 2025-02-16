@@ -2,7 +2,12 @@
   font-family: 'Poppins', 'Arial', sans-serif;
 }
 
-
+/* Make the outermost body scrollable */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-y: auto;
+}
 
 /* ✅ Navbar Layout */
 .top-menu {
@@ -95,7 +100,7 @@
   color: #fff; /* White text color */
   background-color: #1a73e8; /* Blue background */
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 25px;
   text-decoration: none; /* Remove underline */
   display: inline-flex;
   align-items: center;
@@ -165,17 +170,39 @@
   width: 80%;
   max-width: 900px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 30px;
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  height: 75vh;
-  overflow-y: auto; 
+  height: auto;
+  overflow: hidden; 
   display:flex;
   flex-direction: column;
   justify-content: start;
   align-items: center;
+}
+
+
+
+
+/* Style the scrollbar for the body or outermost element */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Color of the scrollbar thumb when hovered */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 10px;
 }
 
 
@@ -249,7 +276,7 @@
   color: white;
   border: none;
   padding: 12px 20px;
-  margin: 10px;
+  margin-top: 30px;
   cursor: pointer;
   font-size: 16px;
   border-radius: 25px;
@@ -485,6 +512,10 @@
   transform: scale(1.05); /* Slight scaling effect on hover */
 }
 
+.added {
+  background-color: #33b249 !important;
+  color: white;
+}
 
 
 .remove-button {
@@ -706,7 +737,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
+  height: 70vh;
 }
 
 
@@ -717,6 +748,7 @@
     align-items: center;
     justify-content: space-between;
     height: 100%;
+    height: 70vh;
   }
 
 

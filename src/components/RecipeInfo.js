@@ -15,16 +15,22 @@ const RecipeInfo = () => {
 
   const currentUrl = window.location.href;
 
-  useEffect(() => {
-    fetchRecipeDetails(idMeal);
-  }, [idMeal, location.state]);
-  
+  // Fetch saved recipes from the database
+  const fetchSavedRecipes = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/saved-recipes");
+      setSavedRecipes(response.data.map(recipe => recipe.idMeal));
+    } catch (error) {
+      console.error("Error fetching saved recipes:", error);
+    }
+  };
 
+  // Fetch recipe details from TheMealDB API
   const fetchRecipeDetails = async (id) => {
     try {
       const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
       if (response.data.meals) {
-        setRecipe(response.data.meals[0]); // ✅ Store the first meal
+        setRecipe(response.data.meals[0]); // Store the first meal
       } else {
         alert("Recipe not found.");
       }
@@ -34,72 +40,37 @@ const RecipeInfo = () => {
     }
   };
 
-  const saveRecipe = async (idMeal) => {
+  useEffect(() => {
+    fetchRecipeDetails(idMeal);
+    fetchSavedRecipes();  // Fetch saved recipes when the component mounts
+  }, [idMeal, location.state]);
+
+  // Add recipe to local database
+  const saveRecipe = async (recipe) => {
     try {
-      // Check if the recipe is already saved
-      if (savedRecipes.includes(idMeal)) {
-        console.log("Recipe already saved!");
-        return; // Exit if already saved
-      }
-  
-      console.log("Fetching recipe details for id:", idMeal); // Log the idMeal being fetched
-  
-      // Fetch the recipe details based on idMeal from TheMealDB API
-      const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`);
-      
-      if (response.data.meals && response.data.meals.length > 0) {
-        const recipe = response.data.meals[0]; // Get the first meal from the response
-        console.log("Fetched recipe:", recipe); // Log the fetched recipe
-  
-        // Now post the full recipe data to save it to the local database
-        await axios.post("http://localhost:5001/save-recipe", recipe);
-  
-        // Update saved list with the idMeal (no need to store the entire recipe object)
-        setSavedRecipes(prev => {
-          console.log("Updating saved recipes list. New list:", [...prev, idMeal]);
-          return [...prev, idMeal];
-        });
-      } else {
-        console.error("No meals found for the provided idMeal:", idMeal);
-      }
-  
+      await axios.post("http://localhost:5001/save-recipe", recipe);
+      setSavedRecipes(prev => [...prev, recipe.idMeal]);
     } catch (error) {
-      // Log detailed error information
       console.error("Error saving recipe:", error);
-      if (error.response) {
-        // If the error has a response (server responded with an error)
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-        console.error("Response headers:", error.response.headers);
-      } else if (error.request) {
-        // If the request was made but no response received
-        console.error("Request data:", error.request);
-      } else {
-        // If the error occurred while setting up the request
-        console.error("Error message:", error.message);
-      }
     }
   };
-  
 
-
-  
-     // ✅ Remove recipe from local database
-     const removeSavedRecipe = async (idMeal) => {
-      try {
-        await axios.delete(`http://localhost:5001/saved-recipes/${idMeal}`);
-        setSavedRecipes(prev => prev.filter(recipeId => recipeId !== idMeal)); // ✅ Update UI to remove the recipe
-      } catch (error) {
-        console.error("Error removing saved recipe:", error);
-      }
-    };
+  // Remove recipe from local database
+  const removeSavedRecipe = async (idMeal) => {
+    try {
+      await axios.delete(`http://localhost:5001/saved-recipes/${idMeal}`);
+      setSavedRecipes(prev => prev.filter(recipeId => recipeId !== idMeal)); // Remove from the list
+    } catch (error) {
+      console.error("Error removing saved recipe:", error);
+    }
+  };
 
   if (!recipe) return <p>Loading recipe details...</p>;
 
   return (
     <div>
       <nav className="top-menu">
-      <div className="top-left">
+        <div className="top-left">
           <div className="menu-left">
             <button onClick={() => navigate("/")} className="logobutton">
               <img
@@ -128,11 +99,11 @@ const RecipeInfo = () => {
           <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
         </div>
       </nav>
-      
+
       <div className="recipe-detail">
         <h1 className="recipe-title">{recipe.strMeal}</h1>
         <div className="centralise-image">
-        <img src={recipe.strMealThumb} alt={recipe.strMeal} className="recipe-image" />
+          <img src={recipe.strMealThumb} alt={recipe.strMeal} className="recipe-image" />
         </div>
         <div className="recipe-header">
           <p><strong>Category:</strong> {recipe.strCategory}</p>
@@ -166,15 +137,16 @@ const RecipeInfo = () => {
               }) || <li>No instructions available.</li>}
           </ul>
         </div>
+
         <div className="buttonsflex">
           <button 
-            className="add-button-info"
+            className={`add-button-info ${savedRecipes.includes(idMeal) ? 'added' : ''}`}
             onClick={(e) => {
-              e.stopPropagation(); // Prevent the click from triggering the parent div's onClick
+              e.stopPropagation(); // Prevent click propagation
               if (savedRecipes.includes(idMeal)) {
                 removeSavedRecipe(idMeal); // Remove if already saved
               } else {  
-                saveRecipe(idMeal); // Save if not saved
+                saveRecipe(recipe); // Save if not saved
               }
             }}
           >
@@ -182,23 +154,24 @@ const RecipeInfo = () => {
           </button>
           <button className="back-button" onClick={() => navigate(-1)}>Back</button>
         </div>
+
         <div className="social-share-buttons">
-        <h3>Share this recipe:</h3>
-        <div className="social-buttons">
-          <TelegramShareButton url={currentUrl} quote={`Check out this delicious recipe: ${recipe.strMeal}`}>
-            <TelegramIcon size={32} round={true} />
-          </TelegramShareButton>
-          <TwitterShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`}>
-            <TwitterIcon size={32} round={true} />
-          </TwitterShareButton>
-          <LinkedinShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
-            <LinkedinIcon size={32} round={true} />
-          </LinkedinShareButton>
-          <WhatsappShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
-            <WhatsappIcon size={32} round={true} />
-          </WhatsappShareButton>
+          <h3>Share this recipe:</h3>
+          <div className="social-buttons">
+            <TelegramShareButton url={currentUrl} quote={`Check out this delicious recipe: ${recipe.strMeal}`}>
+              <TelegramIcon size={32} round={true} />
+            </TelegramShareButton>
+            <TwitterShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`}>
+              <TwitterIcon size={32} round={true} />
+            </TwitterShareButton>
+            <LinkedinShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
+              <LinkedinIcon size={32} round={true} />
+            </LinkedinShareButton>
+            <WhatsappShareButton url={currentUrl} title={`Check out this delicious recipe: ${recipe.strMeal}`} summary={recipe.strInstructions}>
+              <WhatsappIcon size={32} round={true} />
+            </WhatsappShareButton>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

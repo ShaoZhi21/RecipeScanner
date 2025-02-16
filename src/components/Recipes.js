@@ -55,38 +55,43 @@ const Recipes = () => {
         }
     };
 
+    // Navigate to recipe details on card click
+    const handleCardClick = (meal) => {
+        navigate(`/recipe/${meal.idMeal}`, { state: { meal } });
+    };
+
     return (
         <div>
         <nav className="top-menu">
-      <div className="top-left">
-          <div className="menu-left">
-            <button onClick={() => navigate("/")} className="logobutton">
-              <img
-                src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
-                alt="Source Academy Logo"
-                className="logo"
-              />
+          <div className="top-left">
+              <div className="menu-left">
+                <button onClick={() => navigate("/")} className="logobutton">
+                  <img
+                    src="https://media.licdn.com/dms/image/v2/C560BAQEXWhEK2-iC-g/company-logo_200_200/company-logo_200_200/0/1630661833133/source_academy_logo?e=2147483647&v=beta&t=sRrZvGiS24y4E-ZXu-dL1ZOEJ_VtRXsgs9fBDJGgZvs"
+                    alt="Source Academy Logo"
+                    className="logo"
+                  />
+                </button>
+              </div>
+            </div>
+
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search recipes..."
+              className="search-bar"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
+              🔍
             </button>
           </div>
-        </div>
 
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search recipes..."
-            className="search-bar"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="search-icon" onClick={() => navigate("/results", { state: { searchTerm } })}>
-            🔍
-          </button>
-        </div>
-
-        <div className="menu-right">
-          <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
-        </div>
-      </nav>
+          <div className="menu-right">
+            <span className="nav-link" onClick={() => navigate("/myrecipes")}>Saved Recipes</span>
+          </div>
+        </nav>
 
         <div className="container">
             {loading ? (
@@ -113,18 +118,14 @@ const Recipes = () => {
                     // Only show meals for ingredients present in displayIngredients
                     if (displayIngredients.includes(ingredient) && Array.isArray(mealList) && mealList.length > 0) {
                         return mealList.map((meal) => (
-                        <div key={meal.idMeal} className="recipe-card">
+                        <div 
+                            key={meal.idMeal} 
+                            className="recipe-card" 
+                            onClick={() => handleCardClick(meal)} // Make the entire card clickable
+                        >
                             <img src={meal.strMealThumb} alt={meal.strMeal} />
                             <h3>{meal.strMeal}</h3>
                             <div className="ingredient-tag">{ingredient}</div>
-                            <button
-                            className="read-more-button"
-                            onClick={() =>
-                                navigate(`/recipe/${meal.idMeal}`, { state: { meal } })
-                            }
-                            >
-                            Read More
-                            </button>
                         </div>
                         ));
                     }
