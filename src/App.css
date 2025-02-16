@@ -321,6 +321,7 @@ html, body {
 
 .recipe-card {
   position: relative;
+  cursor: pointer;
   background: white;
   padding: 20px;
   border-radius: 10px;
