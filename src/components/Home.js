@@ -96,9 +96,14 @@ function Home() {
       const query = clickedIngredients.join(",");
       const response = await fetch(`http://localhost:5001/filter-meals?q=${query}`);
       const data = await response.json();
+      console.log("Received data:", data);
   
-      if (data.length > 0) {
-        navigate("/recipes", { state: { selectedIngredients: clickedIngredients, meals: data } });
+      // Flatten all meals from all ingredients
+      const meals = Object.values(data).flat(); 
+  
+      // Check if there are meals
+      if (meals.length > 0) {
+        navigate("/recipes", { state: { selectedIngredients: clickedIngredients, meals: meals } });
       } else {
         alert("No meals found for the selected ingredients.");
       }
@@ -106,7 +111,7 @@ function Home() {
       console.error("Error fetching recipes:", error);
       alert("Failed to fetch recipes.");
     }
-  };
+  };  
   
   
   return (
@@ -132,7 +137,9 @@ function Home() {
           <button className="nav-button" onClick={() => navigate("/results", { state: { searchTerm } })}>
             Search
           </button>
-          <button className="nav-button">Saved Recipes</button>
+          <button className="nav-button" onClick={() => navigate("/myrecipes")}>
+            Saved Recipes
+          </button>
           <button className="nav-button">Profile</button>
         </div>
       </nav>
@@ -183,12 +190,26 @@ function Home() {
                 </div>
                 {clickedIngredients.length > 0 && (
                   <div>
-                    <h3>Clicked Ingredients:</h3>
-                    <ul>
-                      {clickedIngredients.map((ingredient, index) => (
-                        <li key={index}>{ingredient}</li>
-                      ))}
-                    </ul>
+                    {clickedIngredients.length > 0 && (
+                      <div>
+                        <h3>Selected Ingredients:</h3>
+                        <div className="ingredients-container">
+                          {clickedIngredients.map((ingredient, index) => (
+                            <div 
+                              key={index} 
+                              className="ingredient-item" 
+                              onClick={() => pushToClicked(ingredient)}
+                              style={{
+                                cursor: "pointer",
+                                color: clickedIngredients.includes(ingredient) ? "green" : "blue",
+                                fontWeight: clickedIngredients.includes(ingredient) ? "bold" : "normal",
+                              }}>
+                              <div className="ingredient">{ingredient}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <button className="primary-button" onClick={goToRecipes} disabled={uploading}>Find Recipes!</button>

@@ -13,6 +13,9 @@ const fetch = require("node-fetch");
 app.use(cors({ origin: 'http://localhost:3000', }));
 app.use(express.json()); // Enable JSON parsing
 
+let savedRecipes = []; // ✅ Define savedRecipes globally
+
+
 // Load environment variables
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
@@ -95,33 +98,37 @@ app.post('/upload', upload.single('file'), (req, res) => {
 });
 
 app.get("/filter-meals", async (req, res) => {
-  const query = req.query.q; // Get ingredients from query parameter
+  const query = req.query.q;
+  console.log("Query received:", query);
   if (!query) return res.status(400).json({ error: "Query parameter is required" });
 
-  const ingredients = query.split(","); // Split ingredients by comma
-  const allMeals = new Set(); // Use a Set to avoid duplicates
+  const ingredients = query.split(",").map(ing => ing.trim());
+  console.log("Ingredients:", ingredients);
+
+  let mealsByIngredient = {}; // Store meals under each ingredient
 
   try {
     for (const ingredient of ingredients) {
-      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient.trim()}`);
+      console.log(`Fetching meals for: ${ingredient}`);
+      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`);
       const data = await response.json();
 
       if (data.meals) {
-        data.meals.forEach(meal => allMeals.add(meal)); // Add each meal to the set
+        mealsByIngredient[ingredient] = data.meals; // Store meals under the ingredient
+        console.log(`Added meals for ${ingredient}:`, data.meals);
+      } else {
+        mealsByIngredient[ingredient] = [];
+        console.log(`No meals found for ${ingredient}`);
       }
     }
 
-    // Convert Set back to an array
-    const mealsArray = Array.from(allMeals);
-
-    res.json(mealsArray);
+    console.log("Final meal list:", mealsByIngredient);
+    res.json(mealsByIngredient);
   } catch (error) {
     console.error("Error filtering meals:", error);
     res.status(500).json({ error: "Failed to filter meals" });
   }
 });
-
-
 
 // Search meals by id
 app.get("/search-meal", async (req, res) => {
@@ -133,15 +140,41 @@ app.get("/search-meal", async (req, res) => {
     const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${query}`);
     const data = await response.json();
     res.json(data);
-
-    // For further processing
-    const meal = data.meals[0];
     
   } catch (error) {
     console.error("Error searching meal:", error);
     res.status(500).json({ error: "Failed to fetch meal" });
   }
 });
+
+// ✅ Save a recipe
+app.post("/save-recipe", (req, res) => {
+  const recipe = req.body;
+  if (!savedRecipes.some(r => r.idMeal === recipe.idMeal)) {
+    savedRecipes.push(recipe);
+  }
+  res.json({ message: "Recipe saved successfully!" });
+});
+
+// ✅ Get all saved recipes
+app.get("/saved-recipes", (req, res) => {
+  res.json(savedRecipes);
+});
+
+app.delete("/saved-recipes/:idMeal", async (req, res) => {
+  const { idMeal } = req.params;
+
+  try {
+    // Remove the saved recipe from the database
+    savedRecipes = savedRecipes.filter((recipe) => recipe.idMeal !== idMeal);
+    
+    res.status(200).json({ message: "Recipe removed" });
+  } catch (error) {
+    console.error("Error removing recipe:", error);
+    res.status(500).json({ error: "Failed to remove recipe" });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
