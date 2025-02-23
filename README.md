@@ -34,7 +34,7 @@ This project is a web application that allows users to upload images of food, re
     ```
 2. Open your browser and navigate to `http://localhost:3000`.
 
-3. Navigate into backend folder:
+3. Navigate into backend folder and start the backend:
     ```bash
     node server.js
     ```
@@ -46,9 +46,6 @@ This project is a web application that allows users to upload images of food, re
 
 ## Contributers
 
-Soong Shao Zhi
-Meng Shuo
-Lee Chong Rui
-Teo Ze Xuan
+Soong Shao Zhi, Meng Shuo, Lee Chong Rui, Teo Ze Xuan
 
 
