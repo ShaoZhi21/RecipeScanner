@@ -1,6 +1,6 @@
-# Recipe Website
+# AI-Powered Smart Recipe Creator
 
-This project is a web application that allows users to upload images of food, recognize ingredients using OpenAI API, and generate recipes. Users can save their favorite recipes and search for recipes using the search function.
+This project is a web application that allows users to upload images of food, recognize ingredients using OpenAI API, and generate recipes. Users can save their favorite recipes and search for recipes using the search function. This project was done by group Source Masters for HackoMania 2025 by GeeksHacking.
 
 ## Features
 
