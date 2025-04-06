@@ -2,6 +2,9 @@
 
 This project is a web application that allows users to upload images of food, recognize ingredients using OpenAI API, and generate recipes. Users can save their favorite recipes and search for recipes using the search function. This project was done by group Source Masters for HackoMania 2025 by GeeksHacking.
 
+[![Web Demo](https://img.youtube.com/vi/3-vEGYFs9W8/0.jpg)](https://youtu.be/3-vEGYFs9W8)
+
+
 ## Features
 
 - **Image Upload**: Upload images to an Amazon S3 bucket.
